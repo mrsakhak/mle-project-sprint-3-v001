@@ -1,0 +1,14 @@
+FROM python:3.11-slim
+
+LABEL author=${AUTHOR}
+
+COPY ./ml_service ./services/ml_service
+COPY ./models ./services/models
+COPY requirements.txt ./services/requirements.txt
+
+WORKDIR services
+ 
+RUN pip3 install -r requirements.txt
+
+EXPOSE ${APP_PORT}
+CMD uvicorn ml_service.churn_app:app --host 0.0.0.0 --port ${APP_PORT}
