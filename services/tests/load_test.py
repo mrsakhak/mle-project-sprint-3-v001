@@ -5,35 +5,40 @@ import datetime
 import time
 import math
 
-with open('datasets/churn_dataset.csv') as f:
-    churn_rows = f.readlines()
+with open('datasets/flats_dataset.csv') as f:
+    flats_rows = f.read().splitlines() 
 
-def make_one_predict():
-    """Функция случайным образом берет строку из "datasets/churn_dataset.csv" и отправляет запрос на сервер
+def make_one_predict(error_prob=0.1):
+    """Функция случайным образом берет строку из "datasets/flats_dataset.csv" и отправляет запрос на сервер
     
     Args:
-        None
+        error_prob (float): вероятность отправки пустых параметров (имитация ошибки)
 
     Returns:
         response (response): Ответ от сервера
     """
-    row_num = random.randrange(1, len(churn_rows))
-    model_params = dict(zip(churn_rows[0].split(','), churn_rows[row_num].split(',')))
-    response = requests.post('http://84.252.142.60:8081/predict?user_id=0', json=model_params)
+    if random.random() < error_prob:
+        model_params = dict()
+    else:
+        row_num = random.randrange(1, len(flats_rows))
+        model_params = dict(zip(flats_rows[0].split(','), flats_rows[row_num].split(',')))
+    
+    response = requests.post('http://84.252.142.60:8081/predict?flat_id=0', json=model_params)
     return response
 
-def make_several_predicts(num=10):
-    """Функция случайным образом берет строку из "datasets/churn_dataset.csv" и отправляет запрос на сервер
+def make_several_predicts(error_prob=0.1, num=10):
+    """Функция случайным образом берет строку из "datasets/flats_dataset.csv" и отправляет запрос на сервер
     
     Args:
+        error_prob (float): вероятность отправки пустых параметров (имитация ошибки)
         num (int): Количество запросов к серверу 
 
     Returns:
         list of response (list): Массив ответов от сервера
     """
-    return [make_one_predict() for i in range(num)]
+    return [make_one_predict(error_prob) for i in range(num)]
 
-def make_continuous_predicts(duration=20, period=5, dots_per_period=20, param_a=40, param_b=20):
+def make_continuous_predicts(error_prob=0.1, duration=20, period=5, dots_per_period=20, param_a=40, param_b=20):
     """Процедура для генерации переменной нагрузки согласно графику: y = a + b*sin(x)
     
     Args:
@@ -57,7 +62,7 @@ def make_continuous_predicts(duration=20, period=5, dots_per_period=20, param_a=
     for step_num in range(duration_int):
         predicts_count = param_a + param_b*math.sin(2*math.pi*step_num/dots_per_period)
         predicts_count = round(predicts_count)
-        make_several_predicts(predicts_count)
+        make_several_predicts(error_prob, predicts_count)
         
         whait_until_time = start_time + datetime.timedelta(seconds=step*step_num)
         delta_seconds_float = max(whait_until_time - datetime.datetime.now(), datetime.timedelta(0)).microseconds/1000000
@@ -67,19 +72,21 @@ def make_continuous_predicts(duration=20, period=5, dots_per_period=20, param_a=
 
 
 params = dict()
-match len(sys.argv):
-    case 2:
-        params['duration'] = float(sys.argv[1])
-    case 4:
-        params['duration'] = float(sys.argv[1])
-        params['period'] = float(sys.argv[2])
-        params['dots_per_period'] = int(sys.argv[3])
-    case 6:
-        params['duration'] = float(sys.argv[1])
-        params['period'] = float(sys.argv[2])
-        params['dots_per_period'] = int(sys.argv[3])
-        params['param_a'] = float(sys.argv[4])
-        params['param_b'] = float(sys.argv[5])
+match sys.argv[1]:
+    case 'one':
+        params['error_prob'] = float(sys.argv[2])
+        print(make_one_predict(**params).content)
+    case 'sev':
+        params['error_prob'] = float(sys.argv[2])
+        params['num'] = int(sys.argv[3])
+        for response in make_several_predicts(**params):
+            print(response.content)
+    case 'cont':
+        params['error_prob'] = float(sys.argv[2])
+        params['duration'] = float(sys.argv[3])
+        params['period'] = float(sys.argv[4])
+        params['dots_per_period'] = int(sys.argv[5])
+        params['param_a'] = float(sys.argv[6])
+        params['param_b'] = float(sys.argv[7])
+        make_continuous_predicts(**params)
         
-make_continuous_predicts(**params)
-
