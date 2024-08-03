@@ -7,7 +7,7 @@
     
     >python3.10 -m venv .venv_deploy
 
-    войти внего и установить все что есть в "requirements.txt"
+    нужно войти в него и установить все что есть в "requirements.txt"
     
     >source .venv_deploy/bin/activate
     >pip install -r requirements.txt
@@ -16,7 +16,7 @@
     
     >uvicorn ml_service.flats_app:app --reload --port 8081 --host 0.0.0.0
 
-    Тепреь можно зайти http://84.252.142.60:8081/docs и проверить как отработает метод /predict
+    Можем зайти http://84.252.142.60:8081/docs (ip нужно заменить на свой) и проверить как отработает метод /predict
 
     Пример параметра для модели который отрабатывает без ошибок:
     {
@@ -38,12 +38,12 @@
         "floors_total_wqeqweqweqw": 8
     }
     
-    Порядок параметров неважен. Параметры, которые  не учавствуют в модели игнорируются.
+    Порядок параметров неважен. Параметры, которые  не участвуют в модели игнорируются.
 
 
 Этап 2
 
-    Все команды запускаются из директории mle-project-sprint-3-v001/services
+    Все команды запускаются из директории mle-project-sprint-3-v001/services и не выходя из .venv_deploy
     Для сбора, запуска и остановки контейнера нужны следующие команды:
 
     Проверяем есть ли наш образ "flats_app" с тегом "with_env"
@@ -70,7 +70,9 @@
     
     >docker container ls
 
-    Остановим контейнер и удалим образ если есть в этом необходимость
+    можем зайти http://84.252.142.60:8081/docs (ip нужно заменить на свой) и проверить как отработает метод /predict
+
+    Остановим контейнер и удалим образ если есть в этом необходимость (container id - нужно заменить на свой)
     
     >docker container stop e8f9f4c19eff
     >docker image rm c16931ac78b8 -f
@@ -83,9 +85,9 @@
 
 Этап 3
 
-    Для запуска docker compose нуждно запустить из директорий mle-project-sprint-3-v001/services команду:
+    Для запуска docker compose нужно запустить из директорий mle-project-sprint-3-v001/services команду:
     
-    >docker compose buld
+    >docker compose build
 
     если уже все собрано но нужно только запустить контейнеры, то нужна команда
     
@@ -110,7 +112,7 @@
 
 Этап 4
 
-    Для запуска теста на нагрузку нуждно запустить из директорий mle-project-sprint-3-v001/services скрипт:
+    Для запуска теста на нагрузку нужно открфть еще один терминал и запустить из директорий mle-project-sprint-3-v001/services скрипт:
     
     >python3.10 tests/load_test.py cont 0.1 3600 200 600 20 20
     
@@ -120,3 +122,6 @@
         - с долей ошибок 10% (0.1)
     
     Файлы "dashboard.json", "dashboard.jpg", "Monitoring.md" находятся в директории mle-project-sprint-3-v001/services/grafana
+        - нужно в grafana - http://84.252.142.60:3000 - создать conection "prometheus" с url "http://prometheus:9090/"
+        - после этого загрузить "dashboard.json" через "import"
+        - выбрать ранее сделанный "conection" и создать дашбоард
