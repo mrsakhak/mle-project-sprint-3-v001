@@ -4,7 +4,7 @@ LABEL author=${AUTHOR}
 
 COPY ./ml_service/flats_app.py ./services/ml_service/flats_app.py
 COPY ./ml_service/flats_handler.py ./services/ml_service/flats_handler.py
-COPY ./models/flats.pkl ./services/models/flats.pkl
+COPY ./models/flats ./services/models/flats
 COPY requirements.txt ./services/requirements.txt
 
 WORKDIR services

@@ -123,5 +123,5 @@
     
     Файлы "dashboard.json", "dashboard.jpg", "Monitoring.md" находятся в директории mle-project-sprint-3-v001/services/grafana
         - нужно в grafana - http://84.252.142.60:3000 - создать conection "prometheus" с url "http://prometheus:9090/"
-        - после этого загрузить "dashboard.json" через "import"
+        - после этого загрузить "dashboard.json" через "new" -> "import"
         - выбрать ранее сделанный "conection" и создать дашбоард

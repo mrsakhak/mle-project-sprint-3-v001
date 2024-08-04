@@ -1,0 +1,15 @@
+building_type_int
+has_elevator
+studio
+is_apartment
+floor
+kitchen_area
+living_area
+rooms
+total_area
+build_year
+latitude
+longitude
+ceiling_height
+flats_count
+floors_total

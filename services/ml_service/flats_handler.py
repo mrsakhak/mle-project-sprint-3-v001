@@ -14,29 +14,16 @@ class FastApiHandler:
             'model_params': dict
         }
         
-        # список необходимых параметров модели и их порядок
-        self.required_model_params = [
-            'building_type_int',
-            'has_elevator',
-            'studio',
-            'is_apartment',
-            'floor',
-            'kitchen_area',
-            'living_area',
-            'rooms',
-            'total_area',
-            'build_year',
-            'latitude',
-            'longitude',
-            'ceiling_height',
-            'flats_count',
-            'floors_total',
-        ]
-        model_path = './models/flats.pkl'
-        self.load_model(model_path=model_path)
+        # загружаем модель и список необходимых параметров
+        model_path = './models/flats/model.pkl'
+        params_path = './models/flats/params.txt'
+        self.load_model(
+            model_path=model_path,
+            params_path=params_path
+        )
 
 
-    def load_model(self, model_path: str):
+    def load_model(self, model_path: str, params_path: str):
         """Загружаем обученную модель предсказания кредитного рейтинга.
         
         Args:
@@ -45,6 +32,9 @@ class FastApiHandler:
         try:
             with open(model_path, 'rb') as model_file:
                 self.model = pickle.load(model_file)
+            with open(params_path, 'r') as params_file:
+                params = params_file.read().splitlines()
+                self.required_model_params = params
         except Exception as e:
             print(f'Failed to load model: {e}')
 
@@ -76,11 +66,12 @@ class FastApiHandler:
         """
         if 'flat_id' not in query_params or 'model_params' not in query_params:
             return False
-        if not isinstance(query_params['flat_id'], self.param_types['flat_id']):
+        elif not isinstance(query_params['flat_id'], self.param_types['flat_id']):
             return False
-        if not isinstance(query_params['model_params'], self.param_types['model_params']):
+        elif not isinstance(query_params['model_params'], self.param_types['model_params']):
             return False
-        return True
+        else:
+            return True
 
     
     def check_required_model_params(self, model_params: dict) -> bool:
