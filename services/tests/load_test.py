@@ -42,6 +42,7 @@ def make_continuous_predicts(error_prob=0.1, duration=20, period=5, dots_per_per
     """Процедура для генерации переменной нагрузки согласно графику: y = a + b*sin(x)
     
     Args:
+        error_prob (float): вероятность отправки пустых параметров (имитация ошибки)
         duration (float): Длительность нагрузки в секундах.
         period (float): Длитенльность одного периода в секундах.
         dots_per_period (int): Количество моментов нагрузки в одном периоде.
